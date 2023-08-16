@@ -2,11 +2,14 @@
 import express from "express";
 import bodyParser from "body-parser";
 import mongoose  from "mongoose";
-import encrypt  from "mongoose-encryption";
+// import encrypt  from "mongoose-encryption";
 import 'dotenv/config'
+// import md5 from "md5";
+import bcrypt from 'bcrypt'
 
 const app = express();
 const port = 3000;
+const saltRounds=10 
 
 main().catch((err) => console.log(err));
 
@@ -18,7 +21,7 @@ async function main() {
     password: String,
 })
 
-userSchema.plugin(encrypt,{secret:process.env.SECRET, encryptedFields: ['password']} )
+// userSchema.plugin(encrypt,{secret:process.env.SECRET, encryptedFields: ['password']} )
 
   const User = mongoose.model("User", userSchema);
 
@@ -39,28 +42,39 @@ userSchema.plugin(encrypt,{secret:process.env.SECRET, encryptedFields: ['passwor
   });
 
   app.post("/register", async (req, res) => {
-    const newUser = new User({
-      email: req.body.username,
-      password: req.body.password,
-    });
 
-    try {
-      await newUser.save();
-      res.render("secrets");
-    } catch (error) {
-      console.error("something is not right:" + error);
-    }
+    bcrypt.hash(req.body.password, saltRounds, async(err, hash)=> {
+      const newUser = new User({
+        email: req.body.username,
+        password:hash,
+      });
+  
+      try {
+        await newUser.save();
+        res.render("secrets");
+      } catch (error) {
+        console.error("something is not right:" + error);
+      }
+  });
+    
   });
 
   app.post('/login',async(req,res)=>{
     const userName=req.body.username
     const passWord=req.body.password
     try {
+      
        const foundUser= await User.findOne({email:userName})
-       if(foundUser){
-        if(foundUser.password===passWord){
+       if(foundUser) {
+        bcrypt.compare(passWord, foundUser.password, function(err, result) {
+          if(result==true){
             res.render('secrets')
-        }
+          }else{
+            res.render('Incorrect Id or Password')
+          }
+      })
+           
+        
        }
     } catch (error) {
         
