@@ -66,7 +66,7 @@ async function main() {
       {
         clientID: process.env.CLIENT_ID,
         clientSecret: process.env.CLIENT_SECRET,
-        callbackURL: "http://localhost:8000/auth/google/secrets", // Replace with your actual callback URL
+        callbackURL: "https://whisper-0x0d.onrender.com/auth/google/secrets", // Replace with your actual callback URL
       },
       (accessToken, refreshToken, profile, cb) => {
         User.findOrCreate({ googleId: profile.id }, (err, user) => {
