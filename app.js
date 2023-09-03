@@ -9,6 +9,7 @@ import passportLocalMongoose from "passport-local-mongoose"; /*step1*/
 import "dotenv/config";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import findOrCreate from "mongoose-findorcreate";
+import cors from 'cors'
 
 const app = express();
 const port = 8000;
@@ -17,6 +18,13 @@ const DATABASE = process.env.DATABASE.replace(
   process.env.DATABASE_PASSWORD
 );
 
+app.use(
+  cors({
+    origin: "https://whisper-0x0d.onrender.com",
+    methods: "GET,POST,PUT,DELETE",
+    credentials: true,
+  })
+);
 main().catch((err) => console.log(err));
 
 async function main() {
