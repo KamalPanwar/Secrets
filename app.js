@@ -20,7 +20,7 @@ const DATABASE = process.env.DATABASE.replace(
 
 app.use(
   cors({
-    origin: "https://whisper-0x0d.onrender.com",
+    origin: "http://localhost:8000",
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
   })
